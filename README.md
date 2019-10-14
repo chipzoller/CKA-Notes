@@ -1,6 +1,4 @@
 # Certified Kubernetes Administrator (CKA) Notes
-My notes on the Certified Kubernetes Administrator (CKA) exam
-
 
 The following are some of my notes of suggestions on preparing to take the CKA exam.
 
