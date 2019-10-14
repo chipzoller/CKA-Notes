@@ -1,0 +1,55 @@
+Summarization
+
+	1. Swap must be disabled on all nodes.
+	2. A CA needs to be provisioned from which all certs must be signed. Cfssl and cfssljson are used to create the CA.
+	3. A pod network range must be decided upon. This is typically a /16 network from which individual /24 subnets will be taken, one per node running pods. In this case, 10.200.0.0/16 is used.
+	4. SSH keys are distributed to all nodes to enable ease of access.
+	5. A CA config file, certificate, and private key are created.
+	6. Client and Server certificates are generated
+		a. Admin client cert and key
+		b. Kubelet cert and key. Each kubelet must identify themselves with a username of system:node:<nodeName> and be in the system:nodes group.
+		c. Controller Manager cert and key
+		d. Kube-proxy cert and key
+		e. Kube-scheduler cert and key
+		f. Kube-api cert and key
+		g. Service Account cert and key. This is used to generate and sign service account tokens.
+	7. Copy the CA cert, node cert and key to all workers.
+	8. Copy the CA cert and key, and kube-api cert and key to all controllers.
+	9. The certs for kubelet, controller manager, kube-proxy, and kube-scheduler will be used to generate client kubeconfig files.
+	10. Kubeconfig files require an API endpoint as the communication target. Either a load balancer VIP for multi-master clusters, or the IP of a single master.
+	11. Kubeconfig files are created on a central system for each node and then distributed from there.
+	12. Generate kubeconfig files for the kubelet service for each worker node.
+		a. kubectl config set-cluster <==takes the ca.pem file
+		b. kubectl config set-credentials  <==takes in the worker cert and key
+		c. kubectl config set-context <==the --user flag must specify system:node:<nodeName>
+	13. Generate kubeconfig file for the kube-proxy service
+		a. kubectl config set-cluster <==takes the ca.pem file
+		b. kubectl config set-credentials <==takes the kube-proxy cert and key
+		c. kubectl config set-context<==the --user flag must be system:kube-proxy
+	14. Generate kubeconfig file for the kube-controller-manager service
+		a. kubectl config set-cluster <==takes the ca.pem file; --server is 127.0.0.1:<port>
+		b. kubectl config set-credentials <==takes the kube-controller-manager. pem file
+		c. kubectl config set-context <==the --user flag must be system:kube-controller-manager
+	15. Generate a kubeconfig file for the kube-scheduler service
+		a. kubectl config set-cluster <==takes the ca.pem file; --server flag must be 127.0.0.1:<port>
+		b. kubectl config set-credentials <==takes kube-scheduler cert and key
+		c. kubectl config set-context <==the --user flag must be system:kube-scheduler
+	16. Generate a kubeconfig file for the admin user
+		a. kubectl config set-cluster <==takes the ca.pem file; --server flag is 127.0.0.1:<port>
+		b. kubectl config set-credentials <==takes the admin cert and key files
+		c. kubectl config set-context <==the --user flag is admin
+	17. Distribute all the kubeconfig files
+		a. Workers get these files:  kubelet; kube-proxy
+		b. Controllers get these files:  admin; kube-controller-manager; kube-scheduler
+	18. An encryption key is generated along with an EncryptionConfig YAML definition file used to encrypt Secrets. The file is distributed to all controllers.
+	19. etcd is manually bootstrapped to all controllers.
+	20. Control plane components are bootstrapped to all controllers. These are kube-apiserver; kube-controller-manager; kube-scheduler; kubectl
+		a. /var/lib/kubernetes is the directory
+		b. All services get systemd unit files
+		c. kube-apiserver does not use a kubeconfig file
+		d. kube-scheduler also has a YAML config file that points to its kubeconfig
+		e. Should be able to verify everything is healthy with 
+		kubectl get componentstatuses --kubeconfig admin.kubeconfig
+	21. RBAC must be configured for kube-apiserver to communicate with the kubelet on each worker.
+		a. Create a ClusterRole called system:kube-apiserver-to-kubelet
+		b. Create a ClusterRoleBinding using the "kubernetes" user created earlier.
