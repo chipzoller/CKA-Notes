@@ -20,7 +20,7 @@ The following are some of my notes of suggestions on preparing to take the CKA e
 
 - [Kubernetes the Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way)
 
-    Yes, you've probably been told you should know this. I would agree. However, you shouldn't need to concern yourself with going through this 20 times and memorizing every step and command by heart. Manually provisioning a K8s cluster is a great way to learn about its internals, but for the purposes of the CKA it isn't necessary. The focus of this exam is testing your practical knowledge of using K8s from a platform perspective, not building it from scratch. That said, I would recommend going through Hightower's tutorial at least twice. See my notes on a high-level overview of what the objectives are here.
+    Yes, you've probably been told you should know this. I would agree. However, you shouldn't need to concern yourself with going through this 20 times and memorizing every step and command by heart. Manually provisioning a K8s cluster is a great way to learn about its internals, but for the purposes of the CKA it isn't necessary. The focus of this exam is testing your practical knowledge of using K8s from a platform perspective, not building it from scratch. That said, I would recommend going through Hightower's tutorial at least twice. See my notes on a high-level overview of what the objectives are [here](https://github.com/chipzoller/CKA-Notes/blob/master/KTHW-Summarization).
 
 - [Certified Kubernetes Administrator (CKA) with Practice Tests (Mannambeth)](https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/)
 
